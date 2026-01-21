@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Listado de productos</title>
+</head>
+<body>
+
+    <h1>Listado de productos</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Modelo</th>
+                <th>Marca</th>
+                <th>Precio</th>
+                <th>Unidades</th>
+                <th>VIP</th>
+                <th>Acciones</th> 
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>{{ producto.modelo }}</td>
+                    <td>{{ producto.marca.nombre }}</td>
+                    <td>{{ producto.precio }}</td>
+                    <td>{{ producto.unidades }}</td>
+                    <td>
+                        {% if producto.vip %}
+                            Sí
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'producto_editar' producto.id %}">Editar</a>
+                        <a href="{% url 'producto_eliminar' producto.id %}">Eliminar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<p><a href="{% url 'producto_crear' %}">Crear Producto</a></p>
+
+</body>
+</html>
