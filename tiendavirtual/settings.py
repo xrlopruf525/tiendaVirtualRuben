@@ -118,3 +118,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'tienda.Usuario'
+
+LOGIN_REDIRECT_URL = '/'  # Cambia esto a la URL que desees
+
+# Redirigir después de cerrar sesión
+LOGOUT_REDIRECT_URL = '/accounts/login/'  # Cambia esto si lo necesitas

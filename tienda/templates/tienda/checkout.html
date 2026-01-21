@@ -1,0 +1,19 @@
+{% extends "tienda/base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1>Checkout</h1>
+
+<p><strong>Producto:</strong> {{ producto.nombre }} ({{ producto.modelo }})</p>
+<p><strong>Precio unitario:</strong> {{ producto.precio }}</p>
+<p><strong>Stock disponible:</strong> {{ producto.unidades }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="unidades">Unidades:</label>
+    <input type="number" id="unidades" name="unidades" value="{{ unidades }}" min="1" max="{{ producto.unidades }}">
+    <p>Total: {{ total }}</p>
+    <button class="btn btn-success" type="submit">Confirmar compra</button>
+</form>
+{% endblock %}

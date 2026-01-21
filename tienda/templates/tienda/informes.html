@@ -1,0 +1,43 @@
+{% extends "tienda/base.html" %}
+
+{% block title %}Informes{% endblock %}
+
+{% block content %}
+<h1>Informes</h1>
+
+<h3>Top 10 clientes por gasto</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Total gastado</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in topclientes %}
+        <tr>
+            <td>{{ cliente.username }}</td>
+            <td>{{ cliente.total_gastado|default:0 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Top 10 productos vendidos</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Unidades vendidas</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in topproductos %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.total_vendidos|default:0 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

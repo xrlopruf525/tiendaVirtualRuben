@@ -1,0 +1,86 @@
+{% extends "tienda/base.html" %}
+
+{% block title %}Tienda{% endblock %}
+
+{% block content %}
+<h1>Productos disponibles</h1>
+
+<form method="get" class="mb-3 row g-2">
+    <div class="col-auto">
+        <input type="text" name="filtro_nombre" placeholder="Buscar por nombre" class="form-control" value="{{ request.GET.filtro_nombre }}">
+    </div>
+    <div class="col-auto">
+        <select name="filtro_marca" class="form-select">
+            <option value="">-- Todas las marcas --</option>
+            {% for marca in marcas %}
+                <option value="{{ marca.nombre }}" {% if request.GET.filtro_marca == marca.nombre %}selected{% endif %}>
+                    {{ marca.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-auto">
+        <input type="number" name="filtro_precio" placeholder="Precio máximo" class="form-control" value="{{ request.GET.filtro_precio }}">
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" type="submit">Filtrar</button>
+    </div>
+</form>
+
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Modelo</th>
+            <th>Precio</th>
+            <th>Unidades</th>
+            <th>Marca</th>
+            <th>Comprar</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.modelo }}</td>
+            <td>{{ producto.precio }}</td>
+            <td>{{ producto.unidades }}</td>
+            <td>{{ producto.marca.nombre }}</td>
+            <td>
+                <a href="{% url 'checkout' producto.id %}" class="btn btn-success btn-sm">Comprar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No hay productos disponibles.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
+        {% endif %}
+        {% for num in paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {% endfor %}
+{% endif %}
+{% endblock %}
