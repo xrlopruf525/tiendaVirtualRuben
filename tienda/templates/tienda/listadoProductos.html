@@ -1,50 +1,43 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Listado de productos</title>
-</head>
-<body>
+{% extends "tienda/base.html" %}
 
-    <h1>Listado de productos</h1>
+{% block title %}Listado de Productos{% endblock %}
 
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Modelo</th>
-                <th>Marca</th>
-                <th>Precio</th>
-                <th>Unidades</th>
-                <th>VIP</th>
-                <th>Acciones</th> 
-            </tr>
-        </thead>
-        <tbody>
-            {% for producto in productos %}
-                <tr>
-                    <td>{{ producto.nombre }}</td>
-                    <td>{{ producto.modelo }}</td>
-                    <td>{{ producto.marca.nombre }}</td>
-                    <td>{{ producto.precio }}</td>
-                    <td>{{ producto.unidades }}</td>
-                    <td>
-                        {% if producto.vip %}
-                            Sí
-                        {% else %}
-                            No
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'producto_editar' producto.id %}">Editar</a>
-                        <a href="{% url 'producto_eliminar' producto.id %}">Eliminar</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% block content %}
+<h1>Listado de Productos</h1>
 
-<p><a href="{% url 'producto_crear' %}">Crear Producto</a></p>
+<a href="{% url 'producto_crear' %}" class="btn btn-success mb-3">Nuevo Producto</a>
 
-</body>
-</html>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Modelo</th>
+            <th>Unidades</th>
+            <th>Precio</th>
+            <th>VIP</th>
+            <th>Marca</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.modelo }}</td>
+            <td>{{ producto.unidades }}</td>
+            <td>{{ producto.precio }}</td>
+            <td>{{ producto.vip }}</td>
+            <td>{{ producto.marca.nombre }}</td>
+            <td>
+                <a href="{% url 'producto_editar' producto.id %}" class="btn btn-primary btn-sm">Editar</a>
+                <a href="{% url 'producto_eliminar' producto.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No hay productos disponibles.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

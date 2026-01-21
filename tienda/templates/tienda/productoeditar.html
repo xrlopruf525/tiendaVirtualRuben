@@ -1,23 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Producto</title>
-</head>
-<body>
+{% extends "tienda/base.html" %}
 
-    <h1>Editar Producto</h1>
+{% block title %}Editar Producto{% endblock %}
 
-    <form method="post">
-        {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-        </table>
+{% block content %}
+<h1>Editar Producto</h1>
 
-        <button type="submit">Guardar cambios</button>
-    </form>
-
-    <p><a href="{% url 'listadoProductos' %}">Volver al listado de productos</a></p>
-
-</body>
-</html>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+    <a href="{% url 'listadoProductos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

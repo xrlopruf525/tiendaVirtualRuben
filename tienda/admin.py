@@ -4,6 +4,6 @@ from .models import *
 
 admin.site.register(Marca)
 admin.site.register(Producto)
-admin.site.register(User)
+admin.site.register(Usuario)
 admin.site.register(Compra)
 admin.site.register(Promocion)
