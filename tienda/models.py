@@ -14,7 +14,7 @@ class Producto(models.Model):
     vip = models.BooleanField(default= False)
     marca = models.ForeignKey("Marca",on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.nombre} ({self.modelo})"
+        return f"{self.nombre} ({self.modelo}), {self.precio}"
 
 class User(models.Model):
     saldo = models.DecimalField(max_digits=10, decimal_places=2)
