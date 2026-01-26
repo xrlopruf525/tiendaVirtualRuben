@@ -87,6 +87,29 @@ class Checkout(LoginRequiredMixin, View):
 
         return redirect('compra_listado')
     
+# def checkout(request, producto_id):
+#     producto = get_object_or_404(Producto, pk=producto_id)
+#     if request.method == 'POST':
+#         form = CompraForm(request.POST)
+#         if form.is_valid():
+#             unidades = form.cleaned_data['unidades']
+#             if unidades > producto.unidades:
+#                 form.add_error('unidades', 'No hay suficientes unidades disponibles.')
+#             else:
+#                 importe = unidades * producto.precio
+#                 Compra.objects.create(
+#                     usuario=request.user,
+#                     producto=producto,
+#                     unidades=unidades,
+#                     importe=importe, 
+#                 )
+#                 producto.unidades -= unidades
+#                 producto.save()
+#                 return redirect('tienda') 
+#     else:
+#         form = CompraForm()
+#     return render(request, 'tienda/checkout.html', {'producto': producto, 'form': form})
+    
 @staff_member_required
 def informes(request):
     topclientes = Usuario.objects.annotate(total_gastado=Sum('compra__importe')).order_by('-total_gastado')[:10]
