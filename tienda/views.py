@@ -30,6 +30,7 @@ class EliminarProducto(LoginRequiredMixin,DeleteView):
     model = Producto
     template_name = 'tienda/eliminarProducto.html'
     success_url = reverse_lazy('listadoProductos')
+    
 class CrearProducto(LoginRequiredMixin,CreateView):
     model = Producto
     template_name = 'tienda/crearProducto.html'
@@ -87,28 +88,67 @@ class Checkout(LoginRequiredMixin, View):
 
         return redirect('compra_listado')
     
-# def checkout(request, producto_id):
-#     producto = get_object_or_404(Producto, pk=producto_id)
-#     if request.method == 'POST':
-#         form = CompraForm(request.POST)
-#         if form.is_valid():
-#             unidades = form.cleaned_data['unidades']
-#             if unidades > producto.unidades:
-#                 form.add_error('unidades', 'No hay suficientes unidades disponibles.')
-#             else:
-#                 importe = unidades * producto.precio
-#                 Compra.objects.create(
-#                     usuario=request.user,
-#                     producto=producto,
-#                     unidades=unidades,
-#                     importe=importe, 
-#                 )
-#                 producto.unidades -= unidades
-#                 producto.save()
-#                 return redirect('tienda') 
-#     else:
-#         form = CompraForm()
-#     return render(request, 'tienda/checkout.html', {'producto': producto, 'form': form})
+def checkout(request, producto_id):
+    producto = get_object_or_404(Producto, pk=producto_id)
+    if request.method == 'POST':
+        form = CompraForm(request.POST)
+        if form.is_valid():
+            unidades = form.cleaned_data['unidades']
+            if unidades > producto.unidades:
+                 form.add_error('unidades', 'No hay suficientes unidades disponibles.')
+            else:
+                 importe = unidades * producto.precio
+                 Compra.objects.create(
+                     usuario=request.user,
+                     producto=producto,
+                     unidades=unidades,
+                     importe=importe, 
+                 )
+                 producto.unidades -= unidades
+                 producto.save()
+                 return redirect('compra_listado') 
+    else:
+         form = CompraForm()
+    return render(request, 'tienda/checkout.html', {'producto': producto, 'form': form})
+
+class CheckoutProducto(CreateView):
+     model=Compra
+     form_class=CompraForm
+     template_name='tienda/checkout.html'
+     success_url=reverse_lazy('compra_listado')
+
+     def get_context_data(self, **kwargs):
+         context=super().get_context_data(**kwargs)
+         context['producto']=get_object_or_404(Producto,pk=self.kwargs['pk'])
+         return context
+    
+    
+     def form_valid(self, form):
+         producto = get_object_or_404(Producto, pk=self.kwargs['pk'])
+         unidades = form.cleaned_data['unidades']
+        
+         if producto.unidades < unidades:
+             form.add_error('unidades', 'No hay suficientes unidades disponibles.')
+             return self.form_invalid(form)
+            
+         compra = form.save(commit=False)
+         compra.producto = producto
+         compra.usuario = self.request.user
+         compra.importe = producto.precio * unidades
+        
+         producto.unidades -= unidades
+         producto.save()
+        
+         compra.save()
+        
+         # Actualizar saldo del usuario
+         usuario = self.request.user
+         usuario.saldo -= compra.importe 
+         usuario.save()
+         print("FORM VALID EJECUTADO")
+
+        
+         return super().form_valid(form)
     
 @staff_member_required
 def informes(request):
