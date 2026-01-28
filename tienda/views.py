@@ -6,8 +6,8 @@ from .forms import *
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
 from django.views import View
-from django.db.models import Sum
-from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Sum, Count, Max, Min, Avg
+from django.contrib.auth.decorators import login_required 
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
@@ -150,11 +150,28 @@ class CheckoutProducto(CreateView):
     
         return super().form_valid(form)
     
-@staff_member_required
+@login_required
 def informes(request):
-    topclientes = Usuario.objects.annotate(total_gastado=Sum('compra__importe')).order_by('-total_gastado')[:10]
-    topproductos = Producto.objects.annotate(total_vendidos=Sum('compra__unidades')).order_by('-total_vendidos')[:10]
-    return render(request, 'tienda/informes.html', {'topclientes': topclientes, 'topproductos': topproductos})
+
+    topclientes = Usuario.objects.annotate(total_gastado=Sum('compras__importe')).order_by('-total_gastado')[:10]
+    topproductos = Producto.objects.annotate(total_vendidos=Sum('compras__unidades')).order_by('-total_vendidos')[:10]
+
+    totalcompras = Compra.objects.filter(usuario=request.user).aggregate(n_total = Count("id"),n_total_importe = Sum('importe'),
+                                            n_total_max = Max('importe'),n_total_min = Min('importe'),
+                                            n_total_avg = Avg('importe'))
+    
+    estadisticas = Usuario.objects.annotate(
+    n_total=Count('compras'),
+    n_total_importe=Sum('compras__importe'),
+    n_total_max=Max('compras__importe'),
+    n_total_min=Min('compras__importe'),
+    n_total_avg=Avg('compras__importe')
+)
+
+
+
+    contexto = {'topclientes': topclientes, 'topproductos': topproductos, "totalcompras":totalcompras, "estadisticas": estadisticas}
+    return render(request, 'tienda/informes.html', contexto)
 
 class PerfilView(LoginRequiredMixin, ListView):
     model = Compra
